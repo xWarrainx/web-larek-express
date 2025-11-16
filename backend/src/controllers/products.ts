@@ -8,9 +8,19 @@ import NotFoundError from '../errors/not-found-error';
 const getProducts = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const products = await Product.find();
+
+    const items = products.map((product) => ({
+      id: product._id.toString(),
+      title: product.title,
+      image: product.image,
+      category: product.category,
+      description: product.description,
+      price: product.price,
+    }));
+
     res.json({
-      items: products,
-      total: products.length,
+      items,
+      total: items.length,
     });
   } catch (error) {
     next(error);
@@ -26,7 +36,14 @@ const getProductById = async (req: Request, res: Response, next: NextFunction): 
       return;
     }
 
-    res.json(product);
+    res.json({
+      id: product._id.toString(),
+      title: product.title,
+      image: product.image,
+      category: product.category,
+      description: product.description,
+      price: product.price,
+    });
   } catch (error) {
     next(error);
   }
@@ -59,12 +76,21 @@ const createProduct = async (
       price: price !== undefined ? price : null,
     });
 
-    const newProductData = await newProduct.save();
+    const savedProduct = await newProduct.save();
+
+    const responseData = {
+      id: savedProduct._id.toString(),
+      title: savedProduct.title,
+      image: savedProduct.image,
+      category: savedProduct.category,
+      description: savedProduct.description,
+      price: savedProduct.price,
+    };
 
     res.status(201).json({
       success: true,
       message: 'Товар успешно создан',
-      data: newProductData.id,
+      data: responseData,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {

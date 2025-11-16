@@ -76,17 +76,15 @@ const createProduct = async (
       price: price !== undefined ? price : null,
     });
 
-    await newProduct.save();
+    const savedProduct = await newProduct.save();
 
     res.status(201).json({
-      description: description || '',
-      image: {
-        fileName: image.fileName,
-        originalName: image.originalName,
-      },
-      title,
-      category,
-      price: price !== undefined ? price : null,
+      id: savedProduct._id.toString(),
+      title: savedProduct.title,
+      image: savedProduct.image,
+      category: savedProduct.category,
+      description: savedProduct.description,
+      price: savedProduct.price,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {

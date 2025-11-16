@@ -80,11 +80,6 @@ const createProduct = async (
 
     res.status(201).json({
       id: savedProduct._id.toString(),
-      title: savedProduct.title,
-      image: savedProduct.image,
-      category: savedProduct.category,
-      description: savedProduct.description,
-      price: savedProduct.price,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {

@@ -10,7 +10,7 @@ const getProducts = async (_req: Request, res: Response, next: NextFunction): Pr
     const products = await Product.find();
 
     const items = products.map((product) => ({
-      id: product._id.toString(),
+      _id: product._id.toString(),
       title: product.title,
       image: product.image,
       category: product.category,
@@ -37,7 +37,7 @@ const getProductById = async (req: Request, res: Response, next: NextFunction): 
     }
 
     res.json({
-      id: product._id.toString(),
+      _id: product._id.toString(),
       title: product.title,
       image: product.image,
       category: product.category,
@@ -79,7 +79,12 @@ const createProduct = async (
     const savedProduct = await newProduct.save();
 
     res.status(201).json({
-      id: savedProduct._id.toString(),
+      _id: savedProduct._id.toString(),
+      title: savedProduct.title,
+      image: savedProduct.image,
+      category: savedProduct.category,
+      description: savedProduct.description,
+      price: savedProduct.price,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {
@@ -113,9 +118,12 @@ const updateProduct = async (req: Request, res: Response, next: NextFunction): P
     }
 
     res.json({
-      success: true,
-      message: 'Товар успешно обновлен',
-      data: updatedProduct,
+      _id: updatedProduct._id.toString(),
+      title: updatedProduct.title,
+      image: updatedProduct.image,
+      category: updatedProduct.category,
+      description: updatedProduct.description,
+      price: updatedProduct.price,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {

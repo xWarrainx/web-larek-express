@@ -59,11 +59,12 @@ const createProduct = async (
       price: price !== undefined ? price : null,
     });
 
-    await newProduct.save();
+    const newProductData = await newProduct.save();
 
     res.status(201).json({
       success: true,
       message: 'Товар успешно создан',
+      data: newProductData._id,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {

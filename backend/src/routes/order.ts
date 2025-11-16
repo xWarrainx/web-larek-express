@@ -10,8 +10,8 @@ router.post('/order', celebrate({
     email: Joi.string().email().required(),
     phone: Joi.string().required(),
     address: Joi.string().required(),
-    total: Joi.number().min(0).required(),
-    items: Joi.array().items(Joi.string()).min(1).required(),
+    total: Joi.number().min(0).required().strict(),
+    items: Joi.array().items(Joi.string().min(1).required()).min(1).required(),
   }),
 }), createOrder);
 

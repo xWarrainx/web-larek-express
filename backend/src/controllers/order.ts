@@ -4,15 +4,34 @@ import { faker } from '@faker-js/faker';
 import Product from '../models/Product';
 import BadRequestError from '../errors/bad-request-error';
 
-const createOrder = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<Response | void> => {
+const createOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const {
-      payment, email, phone, address, total, items,
+      payment: _payment,
+      email: _email,
+      phone: _phone,
+      address: _address,
+      total,
+      items,
     } = req.body;
+
+    // Дополнительная валидация (на случай если celebrate пропустит)
+    if (!total || typeof total !== 'number') {
+      next(new BadRequestError('Total обязателен и должен быть числом'));
+      return;
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      next(new BadRequestError('Items должен быть непустым массивом'));
+      return;
+    }
+
+    // Проверяем что все items - валидные строки
+    const invalidItems = items.filter((item) => !item || typeof item !== 'string' || item.trim() === '');
+    if (invalidItems.length > 0) {
+      next(new BadRequestError('Некорректные ID товаров'));
+      return;
+    }
 
     // Проверяем существование товаров
     const products = await Product.find({
@@ -20,37 +39,47 @@ const createOrder = async (
     });
 
     if (products.length !== items.length) {
-      return next(new BadRequestError('Некоторые товары не найдены'));
+      next(new BadRequestError('Некоторые товары не найдены'));
+      return;
     }
 
     // Проверяем что товары продаются
     const unavailableProducts = products.filter((p) => p.price === null);
     if (unavailableProducts.length > 0) {
-      return next(new BadRequestError('Некоторые товары недоступны для продажи'));
+      next(new BadRequestError('Некоторые товары недоступны для продажи'));
+      return;
     }
 
     // Проверяем сумму
     const calculatedTotal = products.reduce((sum, product) => sum + (product.price || 0), 0);
 
     if (calculatedTotal !== total) {
-      return next(new BadRequestError(`Сумма заказа не совпадает. Ожидалось: ${calculatedTotal}, получено: ${total}`));
+      next(new BadRequestError(`Сумма заказа не совпадает. Ожидалось: ${calculatedTotal}, получено: ${total}`));
+      return;
     }
 
     // Генерируем ID заказа
     const orderId = faker.string.uuid();
 
     // Возвращаем ответ
-    return res.status(201).json({
+    res.status(201).json({
       id: orderId,
       total,
     });
   } catch (error) {
     // Обработка ошибок Mongoose
     if (error instanceof MongooseError.CastError) {
-      return next(new BadRequestError('Некорректный ID товара'));
+      next(new BadRequestError('Некорректный ID товара'));
+      return;
     }
 
-    return next(error);
+    // Обработка JSON parse ошибок
+    if (error instanceof SyntaxError) {
+      next(new BadRequestError('Некорректный JSON'));
+      return;
+    }
+
+    next(error);
   }
 };
 

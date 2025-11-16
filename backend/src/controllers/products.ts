@@ -42,6 +42,12 @@ const createProduct = async (
       description, image, title, category, price,
     } = req.body;
 
+    const existingProduct = await Product.findOne({ title });
+    if (existingProduct) {
+      next(new ConflictError('Товар с таким названием уже существует'));
+      return;
+    }
+
     const newProduct = new Product({
       description: description || '',
       image: {
@@ -53,12 +59,11 @@ const createProduct = async (
       price: price !== undefined ? price : null,
     });
 
-    const savedProduct = await newProduct.save();
+    await newProduct.save();
 
     res.status(201).json({
       success: true,
       message: 'Товар успешно создан',
-      data: savedProduct,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {

@@ -34,7 +34,6 @@
     "express": "^4.19.2",
     "express-winston": "^4.2.0",
     "mongoose": "^8.19.3",
-    "validator": "^13.11.0",
     "winston": "^3.18.3"
   }
 }

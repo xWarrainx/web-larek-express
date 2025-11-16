@@ -6,12 +6,10 @@ import NotFoundError from '../errors/not-found-error';
 
 const errorHandler = (
   error: Error,
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  console.error('Error:', error);
-
   // Если ошибка уже является нашей кастомной ошибкой
   if (error instanceof BadRequestError) {
     return res.status(error.statusCode).json({

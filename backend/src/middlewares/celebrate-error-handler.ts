@@ -3,7 +3,7 @@ import { isCelebrateError } from 'celebrate';
 
 const celebrateErrorHandler = (
   error: Error,
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction,
 ) => {

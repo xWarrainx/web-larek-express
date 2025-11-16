@@ -64,7 +64,7 @@ const createProduct = async (
     res.status(201).json({
       success: true,
       message: 'Товар успешно создан',
-      data: newProductData._id,
+      data: newProductData.id,
     });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {

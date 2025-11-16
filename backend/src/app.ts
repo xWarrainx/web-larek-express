@@ -21,25 +21,26 @@ app.use(cors({
 // Подключаем парсинг JSON
 app.use(express.json());
 
+app.use('/', requestLogger);
+
 // Настраиваем статические файлы с использованием UPLOAD_PATH
 app.use(`/${config.UPLOAD_PATH}`, express.static(path.join(__dirname, 'public', config.UPLOAD_PATH)));
 
 // Раздаем статические файлы (картинки)
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', requestLogger);
-
 // Подключаем роуты
 app.use('/', productRouter);
 app.use('/', orderRouter);
 
+// Подключаем обработку 404 ошибок
+app.use(notFoundHandler);
+
+// Логгер ошибок
 app.use('/', errorLogger);
 
 // Обработка celebrate ошибок
 app.use(celebrateErrorHandler);
-
-// Подключаем обработку 404 ошибок
-app.use(notFoundHandler);
 
 // Подключаем централизованную обработку ошибок
 app.use(errorHandler);

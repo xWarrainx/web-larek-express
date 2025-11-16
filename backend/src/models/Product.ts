@@ -47,6 +47,7 @@ const productSchema = new mongoose.Schema<IProduct>({
     min: [0, 'Цена не может быть отрицательной'],
   },
 }, {
+  versionKey: false,
   timestamps: true,
 });
 

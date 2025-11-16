@@ -62,7 +62,7 @@ const createOrder = async (req: Request, res: Response, next: NextFunction): Pro
     const orderId = faker.string.uuid();
 
     // Возвращаем ответ
-    res.status(201).json({
+    res.status(200).json({
       id: orderId,
       total,
     });
